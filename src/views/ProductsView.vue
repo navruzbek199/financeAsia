@@ -1,56 +1,62 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useProductsStore } from '../stores/products'
-import { useQuotesStore } from '../stores/quotes'
-import { useAuthStore } from '../stores/auth'
+import { ref, onMounted } from "vue";
+import { useProductsStore } from "../stores/products";
+import { useQuotesStore } from "../stores/quotes";
+import { useAuthStore } from "../stores/auth";
 
-const productsStore = useProductsStore()
-const quotesStore = useQuotesStore()
-const authStore = useAuthStore()
+const productsStore = useProductsStore();
+const quotesStore = useQuotesStore();
+const authStore = useAuthStore();
 
-const selectedProduct = ref(null)
+const selectedProduct = ref(null as any);
 const quoteForm = ref({
   quantity: 1,
-  message: ''
-})
-const showQuoteModal = ref(false)
-const success = ref('')
-const error = ref('')
+  message: "",
+});
+const showQuoteModal = ref(false);
+const success = ref("");
+const error = ref("");
 
-const openQuoteModal = (product) => {
-  selectedProduct.value = product
-  showQuoteModal.value = true
-  quoteForm.value = { quantity: 1, message: '' }
-}
+const openQuoteModal = (product: any) => {
+  selectedProduct.value = product;
+  showQuoteModal.value = true;
+  quoteForm.value = { quantity: 1, message: "" };
+};
 
 const submitQuote = async () => {
   try {
-    error.value = ''
+    error.value = "";
     await quotesStore.createQuote({
-      product_id: selectedProduct.value.id,
+      product_id: selectedProduct.value.id as any,
       quantity: quoteForm.value.quantity,
-      message: quoteForm.value.message
-    })
-    success.value = 'Quote request submitted successfully!'
-    showQuoteModal.value = false
+      message: quoteForm.value.message,
+    });
+    success.value = "Quote request submitted successfully!";
+    showQuoteModal.value = false;
     setTimeout(() => {
-      success.value = ''
-    }, 3000)
+      success.value = "";
+    }, 3000);
   } catch (err: any) {
-    error.value = err.response?.data?.error || 'Failed to submit quote request'
+    error.value = err.response?.data?.error || "Failed to submit quote request";
   }
-}
+};
 
 onMounted(() => {
-  productsStore.fetchProducts()
-})
+  productsStore.fetchProducts();
+});
 </script>
 
 <template>
   <div class="products-view">
     <div class="products-header">
-      <h1>{{ authStore.isAdmin ? 'Product Management' : 'Our Products' }}</h1>
-      <p>{{ authStore.isAdmin ? 'Manage your product catalog' : 'Explore our financial products and services' }}</p>
+      <h1>{{ authStore.isAdmin ? "Product Management" : "Our Products" }}</h1>
+      <p>
+        {{
+          authStore.isAdmin
+            ? "Manage your product catalog"
+            : "Explore our financial products and services"
+        }}
+      </p>
     </div>
 
     <div v-if="success" class="success-message">
@@ -66,22 +72,28 @@ onMounted(() => {
     </div>
 
     <div v-else class="products-grid">
-      <div v-for="product in productsStore.products" :key="product.id" class="product-card">
+      <div
+        v-for="product in productsStore.products"
+        :key="product.id"
+        class="product-card"
+      >
         <div class="product-header">
           <h3>{{ product.name }}</h3>
           <span class="product-category">{{ product.category }}</span>
         </div>
-        
+
         <div class="product-body">
           <p class="product-description">{{ product.description }}</p>
           <div class="product-price">
             <span class="price-label">Starting from</span>
-            <span class="price-value">${{ product.price.toLocaleString() }}</span>
+            <span class="price-value"
+              >${{ product.price.toLocaleString() }}</span
+            >
           </div>
         </div>
-        
+
         <div class="product-actions">
-          <button 
+          <button
             v-if="!authStore.isAdmin"
             @click="openQuoteModal(product)"
             class="btn btn-primary"
@@ -96,20 +108,28 @@ onMounted(() => {
     </div>
 
     <!-- Quote Modal -->
-    <div v-if="showQuoteModal" class="modal-overlay" @click="showQuoteModal = false">
+    <div
+      v-if="showQuoteModal"
+      class="modal-overlay"
+      @click="showQuoteModal = false"
+    >
       <div class="modal" @click.stop>
         <div class="modal-header">
           <h2>Request Quote</h2>
-          <button @click="showQuoteModal = false" class="close-btn">&times;</button>
+          <button @click="showQuoteModal = false" class="close-btn">
+            &times;
+          </button>
         </div>
-        
+
         <div class="modal-body">
           <div class="selected-product">
             <h3>{{ selectedProduct?.name }}</h3>
             <p>{{ selectedProduct?.description }}</p>
-            <p class="price">Starting from ${{ selectedProduct?.price.toLocaleString() }}</p>
+            <p class="price">
+              Starting from ${{ selectedProduct?.price.toLocaleString() }}
+            </p>
           </div>
-          
+
           <form @submit.prevent="submitQuote" class="quote-form">
             <div class="form-group">
               <label for="quantity">Quantity</label>
@@ -122,7 +142,7 @@ onMounted(() => {
                 class="form-input"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="message">Additional Message (Optional)</label>
               <textarea
@@ -133,13 +153,17 @@ onMounted(() => {
                 placeholder="Tell us more about your requirements..."
               ></textarea>
             </div>
-            
+
             <div v-if="error" class="error-message">
               {{ error }}
             </div>
-            
+
             <div class="modal-actions">
-              <button type="button" @click="showQuoteModal = false" class="btn btn-outline">
+              <button
+                type="button"
+                @click="showQuoteModal = false"
+                class="btn btn-outline"
+              >
                 Cancel
               </button>
               <button type="submit" class="btn btn-primary">
@@ -439,11 +463,11 @@ onMounted(() => {
   .products-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .modal-overlay {
     padding: 1rem;
   }
-  
+
   .modal-actions {
     flex-direction: column;
   }

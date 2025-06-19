@@ -1,80 +1,83 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useProductsStore } from '../stores/products'
-import { useQuotesStore } from '../stores/quotes'
+import { onMounted, computed } from "vue";
+import { useAuthStore } from "../stores/auth";
+import { useProductsStore } from "../stores/products";
+import { useQuotesStore } from "../stores/quotes";
 
-const authStore = useAuthStore()
-const productsStore = useProductsStore()
-const quotesStore = useQuotesStore()
+const authStore = useAuthStore();
+const productsStore = useProductsStore();
+const quotesStore = useQuotesStore();
 
 const stats = computed(() => {
   if (authStore.isAdmin) {
     return [
       {
-        title: 'Total Products',
+        title: "Total Products",
         value: productsStore.products.length,
-        color: 'bg-blue-500'
+        color: "bg-blue-500",
       },
       {
-        title: 'Quote Requests',
+        title: "Quote Requests",
         value: quotesStore.quotes.length,
-        color: 'bg-green-500'
+        color: "bg-green-500",
       },
       {
-        title: 'Pending Quotes',
-        value: quotesStore.quotes.filter(q => q.status === 'pending').length,
-        color: 'bg-yellow-500'
+        title: "Pending Quotes",
+        value: quotesStore.quotes.filter((q) => q.status === "pending").length,
+        color: "bg-yellow-500",
       },
       {
-        title: 'Approved Quotes',
-        value: quotesStore.quotes.filter(q => q.status === 'approved').length,
-        color: 'bg-emerald-500'
-      }
-    ]
+        title: "Approved Quotes",
+        value: quotesStore.quotes.filter((q) => q.status === "approved").length,
+        color: "bg-emerald-500",
+      },
+    ];
   } else {
     return [
       {
-        title: 'Available Products',
+        title: "Available Products",
         value: productsStore.products.length,
-        color: 'bg-blue-500'
+        color: "bg-blue-500",
       },
       {
-        title: 'My Quotes',
+        title: "My Quotes",
         value: quotesStore.quotes.length,
-        color: 'bg-green-500'
+        color: "bg-green-500",
       },
       {
-        title: 'Pending',
-        value: quotesStore.quotes.filter(q => q.status === 'pending').length,
-        color: 'bg-yellow-500'
+        title: "Pending",
+        value: quotesStore.quotes.filter((q) => q.status === "pending").length,
+        color: "bg-yellow-500",
       },
       {
-        title: 'Approved',
-        value: quotesStore.quotes.filter(q => q.status === 'approved').length,
-        color: 'bg-emerald-500'
-      }
-    ]
+        title: "Approved",
+        value: quotesStore.quotes.filter((q) => q.status === "approved").length,
+        color: "bg-emerald-500",
+      },
+    ];
   }
-})
+});
 
 const recentQuotes = computed(() => {
-  return quotesStore.quotes.slice(0, 5)
-})
+  return quotesStore.quotes.slice(0, 5);
+});
 
 onMounted(() => {
-  productsStore.fetchProducts()
-  quotesStore.fetchQuotes()
-})
+  productsStore.fetchProducts();
+  quotesStore.fetchQuotes();
+});
 </script>
 
 <template>
   <div class="dashboard">
     <div class="dashboard-header">
       <h1>Welcome back, {{ authStore.user?.name }}!</h1>
-      <p>Here's what's happening with your {{ authStore.isAdmin ? 'business' : 'account' }} today.</p>
+      <p>
+        Here's what's happening with your
+        {{ authStore.isAdmin ? "business" : "account" }} today.
+      </p>
     </div>
-    
+
     <div class="stats-grid">
       <div v-for="stat in stats" :key="stat.title" class="stat-card">
         <div class="stat-icon" :class="stat.color"></div>
@@ -84,13 +87,15 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    
+
     <div class="dashboard-content">
       <div class="recent-quotes">
         <h2>Recent Quote Requests</h2>
         <div v-if="recentQuotes.length === 0" class="empty-state">
           <p>No quote requests yet.</p>
-          <RouterLink to="/products" class="btn btn-primary">Browse Products</RouterLink>
+          <RouterLink to="/products" class="btn btn-primary"
+            >Browse Products</RouterLink
+          >
         </div>
         <div v-else class="quotes-list">
           <div v-for="quote in recentQuotes" :key="quote.id" class="quote-item">
@@ -98,7 +103,9 @@ onMounted(() => {
               <h4>{{ quote.product_name }}</h4>
               <p v-if="authStore.isAdmin">Client: {{ quote.client_name }}</p>
               <p>Quantity: {{ quote.quantity }}</p>
-              <span class="quote-date">{{ new Date(quote.created_at).toLocaleDateString() }}</span>
+              <span class="quote-date">{{
+                new Date(quote.created_at).toLocaleDateString()
+              }}</span>
             </div>
             <div class="quote-status">
               <span :class="`status-badge status-${quote.status}`">
@@ -108,10 +115,12 @@ onMounted(() => {
           </div>
         </div>
         <div v-if="recentQuotes.length > 0" class="view-all">
-          <RouterLink to="/quotes" class="btn btn-outline">View All Quotes</RouterLink>
+          <RouterLink to="/quotes" class="btn btn-outline"
+            >View All Quotes</RouterLink
+          >
         </div>
       </div>
-      
+
       <div class="quick-actions">
         <h2>Quick Actions</h2>
         <div class="actions-grid">
@@ -120,21 +129,35 @@ onMounted(() => {
               <span>📦</span>
             </div>
             <div class="action-content">
-              <h3>{{ authStore.isAdmin ? 'Manage Products' : 'Browse Products' }}</h3>
-              <p>{{ authStore.isAdmin ? 'Add, edit, or remove products' : 'View available products and services' }}</p>
+              <h3>
+                {{ authStore.isAdmin ? "Manage Products" : "Browse Products" }}
+              </h3>
+              <p>
+                {{
+                  authStore.isAdmin
+                    ? "Add, edit, or remove products"
+                    : "View available products and services"
+                }}
+              </p>
             </div>
           </RouterLink>
-          
+
           <RouterLink to="/quotes" class="action-card">
             <div class="action-icon bg-green-500">
               <span>💬</span>
             </div>
             <div class="action-content">
               <h3>Quote Requests</h3>
-              <p>{{ authStore.isAdmin ? 'Manage client quote requests' : 'View your quote requests' }}</p>
+              <p>
+                {{
+                  authStore.isAdmin
+                    ? "Manage client quote requests"
+                    : "View your quote requests"
+                }}
+              </p>
             </div>
           </RouterLink>
-          
+
           <RouterLink v-if="authStore.isAdmin" to="/admin" class="action-card">
             <div class="action-icon bg-purple-500">
               <span>⚙️</span>
@@ -384,21 +407,31 @@ onMounted(() => {
   color: white;
 }
 
-.bg-blue-500 { background-color: #3b82f6; }
-.bg-green-500 { background-color: #10b981; }
-.bg-yellow-500 { background-color: #f59e0b; }
-.bg-emerald-500 { background-color: #10b981; }
-.bg-purple-500 { background-color: #8b5cf6; }
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+.bg-green-500 {
+  background-color: #10b981;
+}
+.bg-yellow-500 {
+  background-color: #f59e0b;
+}
+.bg-emerald-500 {
+  background-color: #10b981;
+}
+.bg-purple-500 {
+  background-color: #8b5cf6;
+}
 
 @media (max-width: 768px) {
   .dashboard-content {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
-  
+
   .quote-item {
     flex-direction: column;
     align-items: flex-start;

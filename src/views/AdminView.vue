@@ -1,106 +1,109 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useProductsStore } from '../stores/products'
-import { useQuotesStore } from '../stores/quotes'
+import { ref, onMounted } from "vue";
+import { useProductsStore } from "../stores/products";
+import { useQuotesStore } from "../stores/quotes";
 
-const productsStore = useProductsStore()
-const quotesStore = useQuotesStore()
+const productsStore = useProductsStore();
+const quotesStore = useQuotesStore();
 
-const showProductForm = ref(false)
-const editingProduct = ref(null)
+const showProductForm = ref(false);
+const editingProduct = ref(null);
 const productForm = ref({
-  name: '',
-  description: '',
+  name: "",
+  description: "",
   price: 0,
-  category: ''
-})
+  category: "",
+});
 
-const error = ref('')
-const success = ref('')
+const error = ref("");
+const success = ref("");
 
-const openProductForm = (product = null) => {
-  editingProduct.value = product
+const openProductForm = (product = null as any) => {
+  editingProduct.value = product;
   if (product) {
     productForm.value = {
       name: product.name,
       description: product.description,
       price: product.price,
-      category: product.category
-    }
+      category: product.category,
+    };
   } else {
     productForm.value = {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       price: 0,
-      category: ''
-    }
+      category: "",
+    };
   }
-  showProductForm.value = true
-}
+  showProductForm.value = true;
+};
 
 const closeProductForm = () => {
-  showProductForm.value = false
-  editingProduct.value = null
-  error.value = ''
-}
+  showProductForm.value = false;
+  editingProduct.value = null as any;
+  error.value = "";
+};
 
 const saveProduct = async () => {
   try {
-    error.value = ''
-    
-    if (editingProduct.value) {
-      await productsStore.updateProduct(editingProduct.value.id, productForm.value)
-      success.value = 'Product updated successfully!'
-    } else {
-      await productsStore.createProduct(productForm.value)
-      success.value = 'Product created successfully!'
-    }
-    
-    closeProductForm()
-    setTimeout(() => {
-      success.value = ''
-    }, 3000)
-  } catch (err: any) {
-    error.value = err.response?.data?.error || 'Failed to save product'
-  }
-}
+    error.value = "";
 
-const deleteProduct = async (product) => {
+    if (editingProduct.value) {
+      await productsStore.updateProduct(
+        editingProduct.value.id,
+        productForm.value
+      );
+      success.value = "Product updated successfully!";
+    } else {
+      await productsStore.createProduct(productForm.value);
+      success.value = "Product created successfully!";
+    }
+
+    closeProductForm();
+    setTimeout(() => {
+      success.value = "";
+    }, 3000);
+  } catch (err: any) {
+    error.value = err.response?.data?.error || "Failed to save product";
+  }
+};
+
+const deleteProduct = async (product: any) => {
   if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
     try {
-      await productsStore.deleteProduct(product.id)
-      success.value = 'Product deleted successfully!'
+      await productsStore.deleteProduct(product.id);
+      success.value = "Product deleted successfully!";
       setTimeout(() => {
-        success.value = ''
-      }, 3000)
+        success.value = "";
+      }, 3000);
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to delete product'
+      error.value = err.response?.data?.error || "Failed to delete product";
     }
   }
-}
+};
 
 const updateQuoteStatus = async (quoteId: number, status: string) => {
   try {
-    await quotesStore.updateQuoteStatus(quoteId, status)
+    await quotesStore.updateQuoteStatus(quoteId, status);
   } catch (error) {
-    console.error('Error updating quote status:', error)
+    console.error("Error updating quote status:", error);
   }
-}
+};
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 onMounted(() => {
-  productsStore.fetchProducts()
-  quotesStore.fetchQuotes()
-})
+  productsStore.fetchProducts();
+  quotesStore.fetchQuotes();
+});
 </script>
 
 <template>
@@ -132,7 +135,10 @@ onMounted(() => {
           <p>Loading products...</p>
         </div>
 
-        <div v-else-if="productsStore.products.length === 0" class="empty-state">
+        <div
+          v-else-if="productsStore.products.length === 0"
+          class="empty-state"
+        >
           <p>No products available. Create your first product!</p>
         </div>
 
@@ -158,10 +164,16 @@ onMounted(() => {
                 <td>${{ product.price.toLocaleString() }}</td>
                 <td>
                   <div class="table-actions">
-                    <button @click="openProductForm(product)" class="btn btn-sm btn-outline">
+                    <button
+                      @click="openProductForm(product)"
+                      class="btn btn-sm btn-outline"
+                    >
                       Edit
                     </button>
-                    <button @click="deleteProduct(product)" class="btn btn-sm btn-danger">
+                    <button
+                      @click="deleteProduct(product)"
+                      class="btn btn-sm btn-danger"
+                    >
                       Delete
                     </button>
                   </div>
@@ -176,7 +188,12 @@ onMounted(() => {
       <section class="admin-section">
         <div class="section-header">
           <h2>Quote Requests</h2>
-          <span class="badge">{{ quotesStore.quotes.filter(q => q.status === 'pending').length }} pending</span>
+          <span class="badge"
+            >{{
+              quotesStore.quotes.filter((q) => q.status === "pending").length
+            }}
+            pending</span
+          >
         </div>
 
         <div v-if="quotesStore.loading" class="loading">
@@ -210,7 +227,9 @@ onMounted(() => {
                 </td>
                 <td>{{ quote.product_name }}</td>
                 <td>{{ quote.quantity }}</td>
-                <td>${{ (quote.product_price * quote.quantity).toLocaleString() }}</td>
+                <td>
+                  ${{ (quote.product_price * quote.quantity).toLocaleString() }}
+                </td>
                 <td>
                   <span :class="`status-badge status-${quote.status}`">
                     {{ quote.status }}
@@ -219,13 +238,13 @@ onMounted(() => {
                 <td>{{ formatDate(quote.created_at) }}</td>
                 <td>
                   <div v-if="quote.status === 'pending'" class="table-actions">
-                    <button 
+                    <button
                       @click="updateQuoteStatus(quote.id, 'approved')"
                       class="btn btn-sm btn-success"
                     >
                       Approve
                     </button>
-                    <button 
+                    <button
                       @click="updateQuoteStatus(quote.id, 'rejected')"
                       class="btn btn-sm btn-danger"
                     >
@@ -245,10 +264,10 @@ onMounted(() => {
     <div v-if="showProductForm" class="modal-overlay" @click="closeProductForm">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h2>
+          <h2>{{ editingProduct ? "Edit Product" : "Add New Product" }}</h2>
           <button @click="closeProductForm" class="close-btn">&times;</button>
         </div>
-        
+
         <div class="modal-body">
           <form @submit.prevent="saveProduct" class="product-form">
             <div class="form-group">
@@ -262,7 +281,7 @@ onMounted(() => {
                 placeholder="Enter product name"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="category">Category</label>
               <input
@@ -274,7 +293,7 @@ onMounted(() => {
                 placeholder="Enter category"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="price">Price</label>
               <input
@@ -288,7 +307,7 @@ onMounted(() => {
                 placeholder="Enter price"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="description">Description</label>
               <textarea
@@ -299,17 +318,21 @@ onMounted(() => {
                 placeholder="Enter product description"
               ></textarea>
             </div>
-            
+
             <div v-if="error" class="error-message">
               {{ error }}
             </div>
-            
+
             <div class="modal-actions">
-              <button type="button" @click="closeProductForm" class="btn btn-outline">
+              <button
+                type="button"
+                @click="closeProductForm"
+                class="btn btn-outline"
+              >
                 Cancel
               </button>
               <button type="submit" class="btn btn-primary">
-                {{ editingProduct ? 'Update Product' : 'Create Product' }}
+                {{ editingProduct ? "Update Product" : "Create Product" }}
               </button>
             </div>
           </form>
@@ -642,24 +665,24 @@ th {
     gap: 1rem;
     align-items: flex-start;
   }
-  
+
   .table-actions {
     flex-direction: column;
   }
-  
+
   .modal-overlay {
     padding: 1rem;
   }
-  
+
   .modal-actions {
     flex-direction: column;
   }
-  
+
   .products-table,
   .quotes-table {
     font-size: 0.875rem;
   }
-  
+
   th,
   td {
     padding: 0.75rem;

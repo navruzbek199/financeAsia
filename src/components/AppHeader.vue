@@ -1,14 +1,14 @@
-<script setup lang="ts">
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+<script setup>
+import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
 
-const authStore = useAuthStore()
-const router = useRouter()
+const authStore = useAuthStore();
+const router = useRouter();
 
 const handleLogout = () => {
-  authStore.logout()
-  router.push('/login')
-}
+  authStore.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -18,20 +18,20 @@ const handleLogout = () => {
         <div class="logo">
           <h1>FinanceCRM</h1>
         </div>
-        
+
         <nav class="nav">
           <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
           <RouterLink to="/products" class="nav-link">Products</RouterLink>
           <RouterLink to="/quotes" class="nav-link">Quotes</RouterLink>
-          <RouterLink v-if="authStore.isAdmin" to="/admin" class="nav-link">Admin</RouterLink>
+          <RouterLink v-if="authStore.isAdmin" to="/admin" class="nav-link"
+            >Admin</RouterLink
+          >
         </nav>
-        
+
         <div class="user-menu">
           <span class="user-name">{{ authStore.user?.name }}</span>
           <span class="user-role">{{ authStore.user?.role }}</span>
-          <button @click="handleLogout" class="btn btn-outline">
-            Logout
-          </button>
+          <button @click="handleLogout" class="btn btn-outline">Logout</button>
         </div>
       </div>
     </div>
@@ -139,7 +139,7 @@ const handleLogout = () => {
     height: auto;
     padding: 1rem 0;
   }
-  
+
   .nav {
     order: 3;
     width: 100%;
@@ -147,11 +147,11 @@ const handleLogout = () => {
     margin-top: 1rem;
     gap: 1rem;
   }
-  
+
   .user-menu {
     gap: 0.5rem;
   }
-  
+
   .user-name {
     display: none;
   }
