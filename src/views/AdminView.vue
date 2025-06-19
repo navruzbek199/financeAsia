@@ -50,7 +50,7 @@ const saveProduct = async () => {
 
     if (editingProduct.value) {
       await productsStore.updateProduct(
-        editingProduct.value.id,
+        editingProduct.value?.id as any,
         productForm.value
       );
       success.value = "Product updated successfully!";
