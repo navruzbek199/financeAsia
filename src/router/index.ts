@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/auth";
-import { getActivePinia } from "pinia";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -46,18 +45,4 @@ const router = createRouter({
     },
   ],
 });
-
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next("/login");
-  } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next("/dashboard");
-  } else if (to.meta.requiresAdmin && authStore.user?.role !== "admin") {
-    next("/dashboard");
-  } else {
-    next();
-  }
-});
-
 export default router;

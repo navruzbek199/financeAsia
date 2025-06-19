@@ -7,7 +7,7 @@ const productsStore = useProductsStore();
 const quotesStore = useQuotesStore();
 
 const showProductForm = ref(false);
-const editingProduct = ref(null);
+const editingProduct = ref(null as any);
 const productForm = ref({
   name: "",
   description: "",
