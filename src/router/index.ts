@@ -45,4 +45,18 @@ const router = createRouter({
     },
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next("/login");
+  } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    next("/dashboard");
+  } else if (to.meta.requiresAdmin && authStore.user?.role !== "admin") {
+    next("/dashboard");
+  } else {
+    next();
+  }
+});
+
 export default router;
